@@ -11,7 +11,7 @@ def f_input():
     choice_msg = s.recv(1024)
     print("======== Received choice message from server: =========\n ", choice_msg.decode())
     # User will provide the input as he wants to use the service
-    choice_in = input ("Please choose the functionality you want to proceed with: ")
+    choice_in = input("Please choose the functionality you want to proceed with: ")
     s.send(choice_in.encode())
 
     choice_rec = s.recv(1024)       # According to selected choice, look for the service
