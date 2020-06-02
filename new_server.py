@@ -1,3 +1,4 @@
+import sys
 import socket
 
 from msslogger import MSSLogger
@@ -15,8 +16,9 @@ class Server:
         try:
             self.logger.info("creating a socket connection")
             self.s = socket.socket()
-        except socket.error as msg:  # IN case connection timed out and socket craetion is failed.
+        except socket.error as msg:
             print("Socket Creation error: " + str(msg))
+            sys.exit(1)
 
     def bind_socket(self):
         """Binding the socket and listening for connection"""
@@ -24,6 +26,9 @@ class Server:
             print("Binding the port " + str(port))
             self.s.bind((host, port))
             self.s.listen(5)
+        except KeyboardInterrupt:
+            print ("don't do this with me")
+            sys.exit(1)
 
         except socket.error as msg:
             self.logger.error("socket binding error: " + str(msg) + "\n" + "Retrying ....")
@@ -31,25 +36,36 @@ class Server:
             self.bind_socket()
 
     def socket_accept(self):
-        """Connection establishment with client"""
-        conn, address = self.s.accept()
-        self.logger.info("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
-        print("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
-        choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer"
-        self.recv_data(conn, choice_msg)
+        try:
+            """Connection establishment with client"""
+            conn, address = self.s.accept()
+            self.logger.info("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
+            print("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
+            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer"
+            self.recv_data(conn, choice_msg)
+
+        except KeyboardInterrupt:
+            print ("Closing the socket as interupted by user")
+            sys.exit(1)
+
+        except socket.error as msg:  # IN case connection timed out and socket creation is failed.
+            print("Socket Creation error: " + str(msg))
+            sys.exit(1)
         conn.close()
 
     def recv_data(self, conn, msg):
         """Receiving data for choices"""
-        conn.send(msg.encode())
         try:
+            conn.send(msg.encode())
             msg_recv = conn.recv(1024)
             self.logger.info("=========Value received from client: " + msg_recv.decode() + "==========")
             print("=========Value received from client: ", msg_recv.decode(), "==========")
             conn.send(msg_recv)
             self.select_choice(conn, msg_recv)
         except socket.error as msg:
-            self.logger.info("Socket error: " + str(msg))
+            print ("hello")
+            logger.info("Socket error: " + str(msg))
+            sys.exit(1)
 
     def select_choice(self, conn, choice):
         """Choice selected """
@@ -63,14 +79,21 @@ class Server:
     def server_echo(self, conn):
         """Echo Server """
         while True:
-            recv_data = conn.recv(1024)
-            decoded_data = recv_data.decode()
-            self.logger.info("Input received from client: "+decoded_data)
-            print("Input received from client: ", decoded_data)
-            if decoded_data == "Quit" or decoded_data == "quit" or decoded_data == "Exit" or decoded_data == "exit":
-                conn.send("Disconnecting from server ...\a".encode())
+            try:
+                recv_data = conn.recv(1024)
+                decoded_data = recv_data.decode()
+                self.logger.info("Input received from client: "+decoded_data)
+                print("Input received from client: ", decoded_data)
+                if decoded_data == "Quit" or decoded_data == "quit" or decoded_data == "Exit" or decoded_data == "exit":
+                    conn.send("Disconnecting from server ...\a".encode())
+                    break
+                conn.sendall(recv_data)
+            except socket.error as msg:
+                print("socket connection failure" , str(msg))
+                sys.exit(1)
+            if not len(recv_data):
+                print ("Closing the socket as interupted by user in client side: No input received")
                 break
-            conn.sendall(recv_data)
         conn.close()
 
     def server_fts(self):
