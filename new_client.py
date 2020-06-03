@@ -1,11 +1,14 @@
 import sys
 import socket
+
+import FileTransferService
 from msslogger import MSSLogger
 
 MSSLogger.intializelogger()
 logger = MSSLogger.getlogger("clientlogger")
 host = "127.0.0.1"
 port = 9999
+
 
 class Client:
     def __init__(self):
@@ -36,42 +39,32 @@ class Client:
             self.select_choice_part(choice_rec)
 
         except KeyboardInterrupt:
-            print ("Closing the socket as interupted by user")
+            print("Closing the socket as interrupted by user")
             sys.exit(1)
 
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
             print("Socket Creation error: " + str(msg))
             sys.exit(1)
 
-
     def select_choice_part(self, choice_rec):
         try:
-            print(choice_rec.decode())
-            if (choice_rec.decode()):
+            if choice_rec.decode():
                 if choice_rec.decode() == '1':
                     echo_rcv = self.s.recv(1024).decode()
                     print(echo_rcv)
-                    
+
                     logger.info(echo_rcv)
-                    
                     self.client_echo()
 
                 elif choice_rec.decode() == '2':
-                    pass
-                    # file_transfer()
+                    self.file_transfer()
                 else:
-                    self.invalid_option()
+                    print(self.s.recv(1024).decode())
+                    logger.error(self.s.recv(1024).decode())
             else:
-                print ("Warning: Ack not received from server ")
+                print("Warning: Ack not received from server ")
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
-            print("select_choice_part")
             sys.exit(1)
-
-
-    def invalid_option(self):
-        print("Oops !!! you have entered the wrong input\nDisconnecting from server \a...")
-        logger.error("Oops !!! you have entered the wrong input\nDisconnecting from server \a...")
-
 
     def client_echo(self):
         while True:
@@ -90,10 +83,9 @@ class Client:
                 break
         self.s.close()
 
-
     def file_transfer(self):
-        print("Currently the code is under development ")
-        pass                    # here FTS code will come
+        fts_obj = FileTransferService.FileTransfer()
+        fts_obj.fts_client(self.s)
 
 
 def main():
