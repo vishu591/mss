@@ -1,5 +1,7 @@
 import sys
 import socket
+import os
+import threading
 
 from msslogger import MSSLogger
 
@@ -74,7 +76,7 @@ class Server:
             conn.send(echo_str.encode())
             self.server_echo(conn)
         if choice.decode() == "2":
-            self.server_fts()
+            self.server_fts(conn)
 
     def server_echo(self, conn):
         """Echo Server """
@@ -96,8 +98,32 @@ class Server:
                 break
         conn.close()
 
-    def server_fts(self):
-        pass  # function fot FTS code will come
+    def RetrFile(name, sock):
+        filename = sock.recv(1024)
+        if os.path.isfile(filename):
+            pathFilename = str('EXISTS ' + str(os.path.getsize(filename)))
+            arr1 = bytes(pathFilename, 'utf-8')
+            sock.send(arr1)
+            userResponse1 = sock.recv(1024)
+            userResponse = userResponse1.decode()
+            if userResponse[:2] == 'OK':
+                with open(filename, 'rb') as f:
+                    bytes_to_send = f.read(1024)
+                    sock.send(bytes_to_send)
+                    while bytes_to_send != '':
+                        bytes_to_send = f.read(1024)
+                        sock.send(bytes_to_send)
+        else:
+            sock.send(bytes('ERR', 'utf-8'))
+        sock.close()
+
+    def server_fts(self, conn):
+        """ FTS GET functionality """
+        while True:
+            client, addr = conn.accept()
+            print('client connected ip :<' + str(addr) + '>')
+            t = threading.Thread(target=RetrFile, args=('retrThread', client))
+            t.start()
 
 
 def main():

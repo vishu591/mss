@@ -57,8 +57,11 @@ class Client:
                     self.client_echo()
 
                 elif choice_rec.decode() == '2':
-                    pass
-                    # file_transfer()
+                    echo_rcv = self.s.recv(1024).decode()
+                    print(echo_rcv)
+
+                    logger.info(echo_rcv)
+                    self.file_transfer()
                 else:
                     self.invalid_option()
             else:
@@ -92,8 +95,33 @@ class Client:
 
 
     def file_transfer(self):
-        print("Currently the code is under development ")
-        pass                    # here FTS code will come
+        """client code for fts get functionality"""
+        filename = input(str('Filename -->'))
+        if filename != 'q':
+            arr = bytes(filename, 'utf-8')
+            self.s.send(arr)
+            data1 = self.s.recv(1024)
+            data = data1.decode()
+            if data[:6] == 'EXISTS':
+                filesize = int(data[6:])
+                message = input("File Exists, " + str(filesize) + "Bytes, download? Y/N> ->")
+                if message == 'Y':
+                    s.send(bytes('OK', 'utf-8'))
+                    f = open('new_' + filename, 'wb')
+                    data = self.s.recv(1024)
+                    total_recv = len(data)
+                    f.write(data)
+                    while total_recv < filesize:
+                        data = self.s.recv(1024)
+                        total_recv += len(data)
+                        f.write(data)
+                        print("{0:.2f}".format((total_recv / float(filesize)) * 100) + "% Done")
+                print("Download complete")
+            else:
+                print("File does not exists!")
+        else:
+            print("Enter proper filename")
+        self.s.close()
 
 
 def main():
