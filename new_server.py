@@ -3,6 +3,7 @@ import socket
 import os
 import threading
 import FileTransferService
+from _thread import *
 
 from msslogger import MSSLogger
 
@@ -14,6 +15,7 @@ MSSLogger.intializelogger()
 class Server:
     """Server class"""
     logger = MSSLogger.getlogger("serverlogger")
+    ThreadCount=0
 
     def __init__(self):
         """Socket Creation"""
@@ -29,7 +31,6 @@ class Server:
         try:
             print("Binding the port ..." + str(port))
             self.s.bind((host, port))
-            self.s.listen(5)
             print ("Waiting for incoming connection....")
         
         except KeyboardInterrupt:
@@ -44,13 +45,14 @@ class Server:
     def socket_accept(self):
         try:
             """Connection establishment with client"""
-            conn, address = self.s.accept()
-            self.logger.info("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
-            print("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
-            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer"
-            recv_msg = self.recv_data(conn, choice_msg)	
-            self.select_choice(conn, recv_msg)
-
+            while True:
+                self.s.listen(5)
+                conn, address = self.s.accept()
+                self.logger.info("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
+                print("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
+                self.ThreadCount += 1
+                self.logger.info('Thread Number:'+ str(self.ThreadCount))
+                start_new_thread(self.send_choice, (conn,))
         except KeyboardInterrupt:
             print("Closing the socket as interupted by user")
             sys.exit(1)
@@ -70,6 +72,20 @@ class Server:
             conn.send(msg_recv)
             return msg_recv
 
+        except socket.error as msg:
+            self.logger.info("Socket error: " + str(msg))
+            sys.exit(1)
+
+    def send_choice(self, conn):
+        """Receiving data for choices"""
+        try:
+            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer"
+            conn.send(choice_msg.encode())
+            msg_recv = conn.recv(1024)
+            self.logger.info("========= Value received from client: " + msg_recv.decode() + "==========")
+            print("========= Value received from client: ", msg_recv.decode(), "==========")
+            conn.send(msg_recv)
+            self.select_choice(conn, msg_recv)
         except socket.error as msg:
             self.logger.info("Socket error: " + str(msg))
             sys.exit(1)

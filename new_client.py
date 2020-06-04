@@ -76,11 +76,10 @@ class Client:
 
     def client_echo(self):
         while True:
-            msg = input("Enter the string: ")
-            print("Please provide the input")
+            msg = input("Please provide the input: ")
             if len(msg) == 0:                   
                 continue
-            logger.info("Enter the string: "+msg)
+            logger.info("Please provide the input: "+msg)
             
             # send msg to server
             self.s.sendall(msg.encode())
