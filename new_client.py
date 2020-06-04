@@ -1,6 +1,5 @@
 import sys
 import socket
-
 import FileTransferService
 from msslogger import MSSLogger
 
@@ -39,12 +38,13 @@ class Client:
             self.select_choice_part(choice_rec)
 
         except KeyboardInterrupt:
-            print("Closing the socket as interrupted by user")
+            print ("Closing the socket as interupted by user")
             sys.exit(1)
 
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
             print("Socket Creation error: " + str(msg))
             sys.exit(1)
+
 
     def select_choice_part(self, choice_rec):
         try:
@@ -52,23 +52,34 @@ class Client:
                 if choice_rec.decode() == '1':
                     echo_rcv = self.s.recv(1024).decode()
                     print(echo_rcv)
-
+                    
                     logger.info(echo_rcv)
+                    
                     self.client_echo()
 
                 elif choice_rec.decode() == '2':
+                    echo_rcv = self.s.recv(1024).decode()
+                    print(echo_rcv)
+
+                    logger.info(echo_rcv)
+                    
                     self.file_transfer()
+
                 else:
-                    print(self.s.recv(1024).decode())
+                    print(self.s.recv(1024).decode())	
                     logger.error(self.s.recv(1024).decode())
             else:
                 print("Warning: Ack not received from server ")
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
+            print("Socket Creation error: " + str(msg))
             sys.exit(1)
 
     def client_echo(self):
         while True:
             msg = input("Enter the string: ")
+            print("Please provide the input")
+            if len(msg) == 0:                   
+                continue
             logger.info("Enter the string: "+msg)
             
             # send msg to server
@@ -83,10 +94,37 @@ class Client:
                 break
         self.s.close()
 
-    def file_transfer(self):
-        fts_obj = FileTransferService.FileTransfer()
-        fts_obj.fts_client(self.s)
 
+    def file_transfer(self):
+        """client code for fts get functionality"""
+        fts_obj = FileTransferService.FileTransfer()	
+        fts_obj.fts_client(self.s)
+        filename = input(str('Filename -->'))
+        print (filename)
+        if filename != "q" and len(filename) > 0:
+            self.s.send(filename.encode('utf-8'))
+            data1 = self.s.recv(1024)
+            data = data1.decode()
+            if data[:6] == 'EXISTS':
+                filesize = int(data[6:])
+                message = input("File Exists, " + str(filesize) + "Bytes, download? Y/N> ->")
+                if message == 'Y':
+                    self.s.send(bytes('OK', 'utf-8'))
+                    f = open('new_' + filename, 'wb')
+                    data = self.s.recv(1024)
+                    total_recv = len(data)
+                    f.write(data)
+                    while total_recv < filesize:
+                        data = self.s.recv(1024)
+                        total_recv += len(data)
+                        f.write(data)
+                        print("{0:.2f}".format((total_recv / float(filesize)) * 100) + "% Done")
+                print("Download complete")
+            else:
+                print("File does not exists!")
+        else:
+            print("Enter proper filename")
+        self.s.close()
 
 def main():
     client_obj = Client()
