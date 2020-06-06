@@ -12,10 +12,11 @@ port = 9999  # Port of the socket
 
 MSSLogger.intializelogger()
 
+
 class Server:
     """Server class"""
     logger = MSSLogger.getlogger("serverlogger")
-    ThreadCount=0
+    ThreadCount = 0
 
     def __init__(self):
         """Socket Creation"""
@@ -31,10 +32,10 @@ class Server:
         try:
             print("Binding the port ..." + str(port))
             self.s.bind((host, port))
-            print ("Waiting for incoming connection....")
+            print("Waiting for incoming connection....")
         
         except KeyboardInterrupt:
-            print ("Closing the socket as interupted by user")
+            print("Closing the socket as interrupted by user")
             sys.exit(1)
 
         except socket.error as msg:
@@ -98,8 +99,8 @@ class Server:
             self.server_echo(conn)
         
         elif choice.decode() == "2":
-            echo_str = "========= You have choosed FTS service !!!=========\nPlease choose from below option.\n1. get (To download the file from the server)\n2. put (If you want to upload the file into the server).\n3. Enter into the setting mode"
-            conn.send(echo_str.encode())
+            # echo_str = "========= You have choosed FTS service !!!=========\nPlease choose from below option.\n1. get (To download the file from the server)\n2. put (If you want to upload the file into the server).\n3. Enter into the setting mode"
+            # conn.send(echo_str.encode())
             self.server_fts(conn)
 
         else:	
@@ -118,10 +119,10 @@ class Server:
                     break
                 conn.sendall(recv_data)
             except socket.error as msg:
-                print("socket connection failure" , str(msg))
+                print("socket connection failure", str(msg))
                 sys.exit(1)
             if not len(recv_data):
-                print ("Closing the socket as interupted by user in client side: No input received")
+                print("Closing the socket as interrupted by user in client side: No input received")
                 break
         conn.close()
 
@@ -130,22 +131,6 @@ class Server:
         fts_obj = FileTransferService.FileTransfer()	
         fts_obj.fts_server(conn)
 
-        filename = conn.recv(1024).decode('utf-8')
-        print (filename)
-        print(os.path.isfile(filename))
-        if os.path.isfile(filename):
-            pathFilename = str('EXISTS ' + str(os.path.getsize(filename)))
-            arr1 = bytes(pathFilename, 'utf-8')
-            conn.send(arr1)
-            userResponse1 = conn.recv(1024)
-            userResponse = userResponse1.decode()
-            if userResponse[:2] == 'OK':
-                with open(filename, 'rb') as f:
-                    bytes_to_send = f.read(1024)
-                    conn.send(bytes_to_send)
-        else:
-            conn.send(bytes('ERR', 'utf-8'))
-        conn.close()
 
 def main():
     """Main Function"""
