@@ -83,14 +83,26 @@ class Server:
             choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer:"+str(self.threadCount)
             conn.send(choice_msg.encode())
             msg_recv = conn.recv(1024)
-            self.logger.info("========= Value received from client" + msg_recv.decode() + "==========")
-            print("========= Value received from client", msg_recv.decode(), "==========")
-            list=str(msg_recv.decode()).split(":")
+            list = str(msg_recv.decode()).split(":")
+            self.logger.info("######## Client ",list[0]," Requested for '" + self.selected_service(list[1]) + "' Service ########")
+            print("######## Client ",list[0]," Requested for '" + self.selected_service(list[1]) + "' Service ########")
             conn.send(list[1].encode())
             self.select_choice(conn, list[1].encode())
         except socket.error as msg:
             self.logger.info("Socket error: " + str(msg))
             sys.exit(1)
+
+    def selected_service(self, select_service):
+        try:
+            if select_service == '1':
+                selected_service = "Echo"
+            elif select_service == '2':
+                selected_service = "File Transfer"
+            else:
+                selected_service = "Invalid"
+            return selected_service
+        except socket.error as msg:
+            self.logger.info("error while fetching service name: " + str(msg))
 
     def select_choice(self, conn, choice):
         """Choice selected """
@@ -110,10 +122,10 @@ class Server:
         while True:
             try:
                 recv_data = conn.recv(1024)
-                decoded_data = recv_data.decode()
-                self.logger.info("Input received from client: "+decoded_data)
-                print("Input received from client: ", decoded_data)
-                if decoded_data == "Quit" or decoded_data == "quit" or decoded_data == "Exit" or decoded_data == "exit":
+                plain_text = recv_data.decode()
+                self.logger.info("Input received from client: "+plain_text)
+                print("Input received from client: ", plain_text)
+                if plain_text.lower() == "quit" or plain_text.upper() == "QUIT" or plain_text.lower() == "exit" or plain_text.upper() == "EXIT":
                     conn.send("Disconnecting from server ...\a".encode())
                     break
                 conn.sendall(recv_data)
