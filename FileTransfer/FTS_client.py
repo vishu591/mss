@@ -12,12 +12,12 @@ class FtsClient:
         logger =logger
         print(s.recv(1024).decode(), end="")
         username = input("")
-        s.send(username.encode())
+        s.send((str(threadcount)+":"+username).encode())
 
         # receive password entry
         print(s.recv(1024).decode(), end="")
         password = input("")
-        s.send(password.encode('utf-8'))
+        s.send((str(threadcount)+":"+password).encode('utf-8'))
 
     def get(self, s):
         filename = input('Enter FilePath(To exit, enter q): ')
@@ -86,7 +86,7 @@ class FtsClient:
         elif recv_msg == 'User Authenticated':
             print(s.recv(1024).decode(), end="")
             msg2 = input("")
-            s.send(msg2.encode())
+            s.send((str(threadcount)+":"+msg2).encode())
             choice_rec = s.recv(1024).decode()
             if choice_rec == '1':
                 # get functionality
@@ -107,8 +107,7 @@ class FtsClient:
     def client_settings(self, s,threadcount):
         print(s.recv(1024).decode(), end="")
         choice_msg = input("")
-        s.send(choice_msg.encode())
-
+        s.send((str(threadcount)+":"+choice_msg).encode())
         if choice_msg == '1':
             self.viewLogs(threadcount)
         elif choice_msg == '2':

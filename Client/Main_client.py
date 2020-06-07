@@ -79,7 +79,7 @@ class Client:
             self.logger.info("Please provide the input: " + msg)
 
             # send msg to server
-            self.s.sendall(msg.encode())
+            self.s.sendall((str(self.clientThreadCount)+":"+msg).encode())
 
             # echo reply from server
             data = self.s.recv(1024)

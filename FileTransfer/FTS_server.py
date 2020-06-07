@@ -15,8 +15,9 @@ class FtsServer:
     def send_and_rec_msg(self, conn, msg):
         conn.send(msg.encode())
         recv_frm_client = conn.recv(1024)
-        print("Value received from client: ", recv_frm_client.decode())
-        return recv_frm_client
+        credentials=str(recv_frm_client.decode()).split(":")
+        print("Value received from client", recv_frm_client.decode())
+        return credentials[1].encode()
 
     def admin_settings(self, conn):
         # TODO: admin func (close server connection, view, delete, add)
@@ -90,8 +91,9 @@ class FtsServer:
         encodedFilePath = filepath.decode()
         if os.path.exists(encodedFilePath):
             os.chdir(encodedFilePath)
-            print(finalfileName, " file will be available on path:", os.getcwd())
-            f = open('new_' + finalfileName, 'wb')
+            print(finalfileName, " file will be available on path:", encodedFilePath)
+            filename1 = finalfileName[str(finalfileName).rfind("/"):]
+            f = open(encodedFilePath+"/"+ filename1, 'wb')
             data = sock.recv(1024)
             total_recv = len(data)
             f.write(data)
