@@ -104,7 +104,7 @@ class FtsServer:
             sock.send("Upload complete".encode())
         else:
             no_path = (f"file path '{encodedFilePath}' doesn't exist, Please try again")
-            print (no_path)
+            print(no_path)
             sock.send(no_path.encode())
 
 
@@ -121,7 +121,6 @@ class FtsServer:
                 self.client_get(conn)
             elif recv_msg.decode() == '2':
                 self.uploadFile(conn)
-                # TODO : Put functionality
             elif recv_msg.decode() == '3':
                 self.server_settings(conn)
             elif recv_msg.decode() == '4':
