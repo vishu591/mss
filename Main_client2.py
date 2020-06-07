@@ -33,7 +33,7 @@ class Client:
             # User will provide the input as he wants to use the service
             choice_in = input("Please choose the functionality you want to proceed with: ")
             self.logger.info("Please choose the functionality you want to proceed with: " + choice_in)
-            self.s.send((list[1] + ":" + choice_in.strip()).encode())
+            self.s.send((list[1] + ":" + choice_in).encode())
             choice_rec = self.s.recv(1024)  # According to selected choice, look for the service
             self.logger.info(choice_rec.decode())
             self.select_choice_part(choice_rec)
