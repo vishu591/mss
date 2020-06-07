@@ -16,7 +16,7 @@ MSSLogger.intializelogger()
 class Server:
     """Server class"""
     logger = MSSLogger.getlogger("serverlogger")
-    ThreadCount = 0
+    threadCount = 0
 
     def __init__(self):
         """Socket Creation"""
@@ -51,8 +51,8 @@ class Server:
                 conn, address = self.s.accept()
                 self.logger.info("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
                 print("connection has been established " + "with IP " + address[0] + " and port " + str(address[1]))
-                self.ThreadCount += 1
-                self.logger.info('Thread Number:'+ str(self.ThreadCount))
+                self.threadCount += 1
+                self.logger.info('Thread Number:' + str(self.threadCount))
                 start_new_thread(self.send_choice, (conn,))
         except KeyboardInterrupt:
             print("Closing the socket as interupted by user")
@@ -80,13 +80,14 @@ class Server:
     def send_choice(self, conn):
         """Receiving data for choices"""
         try:
-            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer"
+            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer:"+str(self.threadCount)
             conn.send(choice_msg.encode())
             msg_recv = conn.recv(1024)
-            self.logger.info("========= Value received from client: " + msg_recv.decode() + "==========")
-            print("========= Value received from client: ", msg_recv.decode(), "==========")
-            conn.send(msg_recv)
-            self.select_choice(conn, msg_recv)
+            self.logger.info("========= Value received from client" + msg_recv.decode() + "==========")
+            print("========= Value received from client", msg_recv.decode(), "==========")
+            list=str(msg_recv.decode()).split(":")
+            conn.send(list[1].encode())
+            self.select_choice(conn, list[1].encode())
         except socket.error as msg:
             self.logger.info("Socket error: " + str(msg))
             sys.exit(1)
@@ -99,8 +100,6 @@ class Server:
             self.server_echo(conn)
         
         elif choice.decode() == "2":
-            # echo_str = "========= You have choosed FTS service !!!=========\nPlease choose from below option.\n1. get (To download the file from the server)\n2. put (If you want to upload the file into the server).\n3. Enter into the setting mode"
-            # conn.send(echo_str.encode())
             self.server_fts(conn)
 
         else:	
@@ -130,7 +129,6 @@ class Server:
         """ FTS GET functionality """
         fts_obj = FileTransferService.FileTransfer()	
         fts_obj.fts_server(conn)
-
 
 def main():
     """Main Function"""

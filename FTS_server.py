@@ -1,11 +1,12 @@
 import os
 import sys
 import database
+from msslogger import MSSLogger
 from new_server import Server
 
 
 class FtsServer:
-
+    logger = MSSLogger.getlogger("serverlogger")
     def __init__(self):
         # Create connection
         self.db = database.DatabaseConn()
@@ -45,7 +46,6 @@ class FtsServer:
         recv_ch_msg = self.send_and_rec_msg(conn, choice_msg3)
 
         if recv_ch_msg.decode() == '1':
-            # TO DO: Add logging functionality
             pass
         elif recv_ch_msg.decode() == '2':
             pass

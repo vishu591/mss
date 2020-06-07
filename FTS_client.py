@@ -2,12 +2,16 @@ import os
 import socket
 import sys
 
+from msslogger import MSSLogger
+from Serverhandler import ServerHandler
+
 
 class FtsClient:
-
+    logger=""
     @staticmethod
-    def get_user_details(s):
+    def get_user_details(s, threadcount, logger):
         # receive username entry
+        logger =logger
         print(s.recv(1024).decode(), end="")
         username = input("")
         s.send(username.encode())
@@ -72,10 +76,12 @@ class FtsClient:
         #     TODO:admin settings
         pass
 
-    def fts_client(self, s):
-        self.get_user_details(s)
+    def fts_client(self, s,threadcount, logger):
+        self.logger=logger
+        self.get_user_details(s,threadcount,logger)
         recv_msg = s.recv(1024).decode()
         print(recv_msg)
+        self.logger.info(recv_msg)
         if recv_msg == 'Admin Settings':
             self.admin_settings(s)
         elif recv_msg == 'User Authenticated':
@@ -89,7 +95,7 @@ class FtsClient:
             elif choice_rec == '2':
                 self.fts_put(s)
             elif choice_rec == '3':
-                self.client_settings(s)
+                self.client_settings(s,threadcount)
             elif choice_rec == '4':
                 print(s.recv(1024).decode())
                 sys.exit(1)
@@ -99,17 +105,23 @@ class FtsClient:
         else:
             sys.exit(1)
 
-    def client_settings(self, s):
+    def client_settings(self, s,threadcount):
         print(s.recv(1024).decode(), end="")
         choice_msg = input("")
         s.send(choice_msg.encode())
 
         if choice_msg == '1':
-            # TO DO: Add View logging
-            pass
+            self.viewLogs(threadcount)
         elif choice_msg == '2':
             self.get_user_details(s)
             print(s.recv(1024).decode())
         else:
             print(s.recv(1024).decode())
             sys.exit(1)
+
+    # This method is used to view client logs
+    def viewLogs(self,threadcount):
+        file =open("Client"+str(threadcount)+".log", "r")
+        allContent=file.read()
+        print(allContent)
+        file.close()

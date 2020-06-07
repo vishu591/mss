@@ -1,6 +1,11 @@
 import logging
-import random
-import os
-class serverFileHandler(logging.FileHandler):
-    def __init__(self,fileName,mode):
-        super(serverFileHandler,self).__init__(fileName,mode)
+class serverFileHandler():
+    def myLogging(self,fileName):
+        logger = logging.getLogger("clientlogger")
+        logger.setLevel(logging.INFO)
+        handler = logging.FileHandler(fileName+".log","w")
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        self.logger=logger
+        return logger
