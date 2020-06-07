@@ -1,11 +1,9 @@
 import sys
 import socket
-import os
-import threading
-import FileTransferService
 from _thread import *
 
-from msslogger import MSSLogger
+from FileTransfer import FileTransferService
+from Logging.MSSlogger import MSSLogger
 
 host = ""  # Address of the socket
 port = 9999  # Port of the socket
@@ -84,8 +82,8 @@ class Server:
             conn.send(choice_msg.encode())
             msg_recv = conn.recv(1024)
             list = str(msg_recv.decode()).split(":")
-            self.logger.info("######## Client ",list[0]," Requested for '" + self.selected_service(list[1]) + "' Service ########")
-            print("######## Client ",list[0]," Requested for '" + self.selected_service(list[1]) + "' Service ########")
+            self.logger.info("######## Client "+list[0]+" Requested for '" + self.selected_service(list[1]) + "' Service ########")
+            print("######## Client "+list[0]+" Requested for '" + self.selected_service(list[1]) + "' Service ########")
             conn.send(list[1].encode())
             self.select_choice(conn, list[1].encode())
         except socket.error as msg:
@@ -122,10 +120,10 @@ class Server:
         while True:
             try:
                 recv_data = conn.recv(1024)
-                plain_text = recv_data.decode()
-                self.logger.info("Input received from client: "+plain_text)
-                print("Input received from client: ", plain_text)
-                if plain_text.lower() == "quit" or plain_text.upper() == "QUIT" or plain_text.lower() == "exit" or plain_text.upper() == "EXIT":
+                decoded_data = recv_data.decode()
+                self.logger.info("Input received from client: "+decoded_data)
+                print("Input received from client: ", decoded_data)
+                if str(decoded_data).upper() == "QUIT" or str(decoded_data).upper() == "EXIT" :
                     conn.send("Disconnecting from server ...\a".encode())
                     break
                 conn.sendall(recv_data)
@@ -139,7 +137,7 @@ class Server:
 
     def server_fts(self, conn):
         """ FTS GET functionality """
-        fts_obj = FileTransferService.FileTransfer()	
+        fts_obj = FileTransferService.FileTransfer()
         fts_obj.fts_server(conn)
 
 def main():

@@ -1,9 +1,7 @@
 import os
-import socket
 import sys
-
-from msslogger import MSSLogger
-from Serverhandler import Serverhandler
+from fileinput import filename
+from pathlib import Path
 
 
 class FtsClient:
@@ -22,7 +20,7 @@ class FtsClient:
         s.send(password.encode('utf-8'))
 
     def get(self, s):
-        filename = input('Enter Filename(To exit, enter q): ')
+        filename = input('Enter FilePath(To exit, enter q): ')
 
         if filename != "q" and len(filename) > 0:
             print(filename)
@@ -34,7 +32,8 @@ class FtsClient:
                 message = input("File Exists, " + str(filesize) + "Bytes, download? Y/N> ->")
                 if message == 'Y':
                     s.send(bytes('OK', 'utf-8'))
-                    f = open('new_' + filename, 'wb')
+                    filename1=filename[str(filename).rfind("/"):]
+                    f = open(str(Path(os.getcwd()).parent)+"\Downloads\\"+ filename1, 'wb')
                     data = s.recv(1024)
                     total_recv = len(data)
                     f.write(data)
@@ -49,7 +48,7 @@ class FtsClient:
             print("User Exited or no filename entered....")
 
     def fts_put(self, s):
-        filename = input('Enter Filename (To exit, enter q): ')
+        filename = input('Enter FilePath (To exit, enter q): ')
         if os.path.isfile(filename):
             if filename != "q":
                 concatwithSize = str(filename + ' EXISTS ' + str(os.path.getsize(filename)))
@@ -121,7 +120,8 @@ class FtsClient:
 
     # This method is used to view client logs
     def viewLogs(self,threadcount):
-        file =open("Client"+str(threadcount)+".log", "r")
+        logsFolderPath=str(Path(os.getcwd()).parent)+"\Logs\\"
+        file =open(logsFolderPath+"Client"+str(threadcount)+".log", "r")
         allContent=file.read()
         print(allContent)
         file.close()

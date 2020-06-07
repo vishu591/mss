@@ -1,8 +1,7 @@
 import os
-import sys
-import database
-from msslogger import MSSLogger
-from Main_server import Server
+from DAO import database
+from Logging.MSSlogger import MSSLogger
+from Server.Main_server import Server
 
 
 class FtsServer:

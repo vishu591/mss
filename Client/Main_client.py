@@ -1,8 +1,8 @@
 import sys
 import socket
-import FileTransferService
-from msslogger import MSSLogger
-from Serverhandler import Serverhandler
+from FileTransfer import FileTransferService
+from Logging.MSSlogger import MSSLogger
+
 
 host = "127.0.0.1"
 port = 9999
@@ -26,7 +26,7 @@ class Client:
         try:
             choice_msg = self.s.recv(1024)
             list = str(choice_msg.decode()).split(":")
-            self.logger = Serverhandler().myLogging("Client" + list[1]);
+            self.logger = MSSLogger.getClientLogger("Client" + list[1]);
             self.clientThreadCount = list[1]
             self.logger.info("======== WELCOME TO MULTI SERVICE SERVER  =========\n " + list[0])
             print("======== WELCOME TO MULTI SERVICE SERVER =========\n ", list[0])
@@ -94,12 +94,3 @@ class Client:
         """client code for fts get functionality"""
         fts_obj = FileTransferService.FileTransfer()
         fts_obj.fts_client(self.s, self.clientThreadCount, self.logger)
-
-
-def main():
-    client_obj = Client()
-    client_obj.select_choice()
-
-
-if __name__ == "__main__":
-    main()
