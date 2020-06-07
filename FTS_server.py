@@ -1,11 +1,12 @@
 import os
 import sys
 import database
-from new_server import Server
+from msslogger import MSSLogger
+from Main_server import Server
 
 
 class FtsServer:
-
+    logger = MSSLogger.getlogger("serverlogger")
     def __init__(self):
         # Create connection
         self.db = database.DatabaseConn()
@@ -45,9 +46,9 @@ class FtsServer:
         recv_ch_msg = self.send_and_rec_msg(conn, choice_msg3)
 
         if recv_ch_msg.decode() == '1':
-            # TO DO: Add logging functionality
             pass
         elif recv_ch_msg.decode() == '2':
+            pass
             # Receive username and password from Client
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
             recv_password = self.send_and_rec_msg(conn, "Enter password: ")
@@ -62,6 +63,7 @@ class FtsServer:
             conn.send("Invalid choice!!Please enter valid choice..".encode())
 
     def client_get(self, conn):
+        """this function is used for downloading the file from server to client"""
         filename = conn.recv(1024).decode('utf-8')
         print(filename)
         print(os.path.isfile(filename))
@@ -77,10 +79,37 @@ class FtsServer:
                     conn.send(bytes_to_send)
         else:
             conn.send(bytes('ERR', 'utf-8'))
-        # TO DO : Get functionality
-        # conn.close()
+
+    def uploadFile(self, sock):
+        """this function is user for uploading the file from client to server"""
+        filename = sock.recv(1024)
+        encodedFilename = filename.decode()
+        filesize = int(encodedFilename.split(" EXISTS ", 1)[1])
+        finalfileName = encodedFilename.split(" EXISTS ", 1)[0]
+        print("file which is going to be uploaded is : " + finalfileName)
+        filepath = sock.recv(1024)
+        encodedFilePath = filepath.decode()
+        if os.path.exists(encodedFilePath):
+            os.chdir(encodedFilePath)
+            print(finalfileName, " file will be available on path:", os.getcwd())
+            f = open('new_' + finalfileName, 'wb')
+            data = sock.recv(1024)
+            total_recv = len(data)
+            f.write(data)
+            while total_recv < filesize:
+                data = sock.recv(1024)
+                total_recv += len(data)
+                f.write(data)
+            print("Upload complete")
+            sock.send("Upload complete".encode())
+        else:
+            no_path = (f"file path '{encodedFilePath}' doesn't exist, Please try again")
+            print(no_path)
+            sock.send(no_path.encode())
+
 
     def fts_server(self, conn):
+        self.db.create_user('user3', 'pass1')
         result = self.user_authentication(conn)
         if result == 'Admin':
             self.admin_settings(conn)
@@ -91,8 +120,7 @@ class FtsServer:
                 # Get functionality
                 self.client_get(conn)
             elif recv_msg.decode() == '2':
-                pass
-                # TODO : Put functionality
+                self.uploadFile(conn)
             elif recv_msg.decode() == '3':
                 self.server_settings(conn)
             elif recv_msg.decode() == '4':

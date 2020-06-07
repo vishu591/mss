@@ -1,11 +1,17 @@
+import os
+import socket
 import sys
+
+from msslogger import MSSLogger
+from Serverhandler import Serverhandler
 
 
 class FtsClient:
-
+    logger=""
     @staticmethod
-    def get_user_details(s):
+    def get_user_details(s, threadcount, logger):
         # receive username entry
+        logger =logger
         print(s.recv(1024).decode(), end="")
         username = input("")
         s.send(username.encode())
@@ -17,8 +23,9 @@ class FtsClient:
 
     def get(self, s):
         filename = input('Enter Filename(To exit, enter q): ')
-        print(filename)
+
         if filename != "q" and len(filename) > 0:
+            print(filename)
             s.send(filename.encode('utf-8'))
             data1 = s.recv(1024)
             data = data1.decode()
@@ -35,22 +42,46 @@ class FtsClient:
                         data = s.recv(1024)
                         total_recv += len(data)
                         f.write(data)
-                        print("{0:.2f}".format((total_recv / float(filesize)) * 100) + "% Done")
                 print("Download complete")
             else:
                 print("File does not exists!")
         else:
-            print("Enter proper filename")
-        # s.close()
+            print("User Exited or no filename entered....")
+
+    def fts_put(self, s):
+        filename = input('Enter Filename (To exit, enter q): ')
+        if os.path.isfile(filename):
+            if filename != "q":
+                concatwithSize = str(filename + ' EXISTS ' + str(os.path.getsize(filename)))
+                print (concatwithSize)
+                filenameAndSize = bytes(concatwithSize, 'utf-8')
+                s.send(filenameAndSize)
+                filepath = input('Enter the path where you want to upload the file: ')
+                filepathBytecode = bytes(filepath, 'utf-8')
+                s.send(filepathBytecode)
+                if os.path.exists(filepath):
+                    with open(filename, 'rb') as f:
+                        bytes_to_send = f.read()
+                        s.send(bytes_to_send)
+                    print(s.recv(1024).decode())
+                else:
+                    file_path = s.recv(1024).decode()
+                    print (file_path)
+            else:
+                print("User Exited ...")
+        else:
+            print("No file name given or file not exists")
 
     def admin_settings(self, s):
         #     TODO:admin settings
         pass
 
-    def fts_client(self, s):
-        self.get_user_details(s)
+    def fts_client(self, s,threadcount, logger):
+        self.logger=logger
+        self.get_user_details(s,threadcount,logger)
         recv_msg = s.recv(1024).decode()
         print(recv_msg)
+        self.logger.info(recv_msg)
         if recv_msg == 'Admin Settings':
             self.admin_settings(s)
         elif recv_msg == 'User Authenticated':
@@ -62,10 +93,9 @@ class FtsClient:
                 # get functionality
                 self.get(s)
             elif choice_rec == '2':
-                # TO DO: Add put functionality
-                pass
+                self.fts_put(s)
             elif choice_rec == '3':
-                self.client_settings(s)
+                self.client_settings(s,threadcount)
             elif choice_rec == '4':
                 print(s.recv(1024).decode())
                 sys.exit(1)
@@ -75,17 +105,23 @@ class FtsClient:
         else:
             sys.exit(1)
 
-    def client_settings(self, s):
+    def client_settings(self, s,threadcount):
         print(s.recv(1024).decode(), end="")
         choice_msg = input("")
         s.send(choice_msg.encode())
 
         if choice_msg == '1':
-            # TO DO: Add View logging
-            pass
+            self.viewLogs(threadcount)
         elif choice_msg == '2':
-            self.get_user_details(s)
+            self.get_user_details(s, threadcount, self.logger)
             print(s.recv(1024).decode())
         else:
             print(s.recv(1024).decode())
             sys.exit(1)
+
+    # This method is used to view client logs
+    def viewLogs(self,threadcount):
+        file =open("Client"+str(threadcount)+".log", "r")
+        allContent=file.read()
+        print(allContent)
+        file.close()

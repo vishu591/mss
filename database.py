@@ -13,7 +13,7 @@ class DatabaseConn:
     def create_table(self):
         try:
             c = self.conn.cursor()
-            c.execute('CREATE TABLE IF NOT EXISTS Authentication ( user text PRIMARY KEY, pass password)')
+            c.execute('CREATE TABLE IF NOT EXISTS Authentication ( user text PRIMARY KEY, pass text)')
             self.conn.commit()
         except sqlite3.Error as error:
             print("Error while creating table", error)

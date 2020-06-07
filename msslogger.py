@@ -7,8 +7,10 @@ class MSSLogger:
     # this method initialize the logger
     @staticmethod
     def intializelogger():
-        logging.config.fileConfig(fname='log.ini', disable_existing_loggers=False)
-
+        try:
+            logging.config.fileConfig(fname='log.ini', disable_existing_loggers=False)
+        except:
+            print("Exception occured while loading logging file...")
     # this method returns the logger instance based on the logger name from log.ini config file
     @staticmethod
     def getlogger(loggerName):
