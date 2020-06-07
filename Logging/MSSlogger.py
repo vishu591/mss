@@ -35,7 +35,3 @@ class MSSLogger:
         handler.setFormatter(formatter)
         clientlogger.addHandler(handler)
         return clientlogger
-
-if __name__ == "__main__":
-
-    print(os.path.dirname(os.path.abspath("log.ini"))+ "\Logs\serverlogger.log")
