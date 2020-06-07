@@ -95,7 +95,6 @@ class Client:
         fts_obj = FileTransferService.FileTransfer()	
         fts_obj.fts_client(self.s)
 
-
 def main():
     client_obj = Client()
     client_obj.select_choice()

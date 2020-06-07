@@ -1,3 +1,5 @@
+import os
+import socket
 import sys
 
 
@@ -17,8 +19,9 @@ class FtsClient:
 
     def get(self, s):
         filename = input('Enter Filename(To exit, enter q): ')
-        print(filename)
+
         if filename != "q" and len(filename) > 0:
+            print(filename)
             s.send(filename.encode('utf-8'))
             data1 = s.recv(1024)
             data = data1.decode()
@@ -35,13 +38,35 @@ class FtsClient:
                         data = s.recv(1024)
                         total_recv += len(data)
                         f.write(data)
-                        print("{0:.2f}".format((total_recv / float(filesize)) * 100) + "% Done")
                 print("Download complete")
             else:
                 print("File does not exists!")
         else:
-            print("Enter proper filename")
-        # s.close()
+            print("User Exited or no filename entered....")
+
+    def fts_put(self, s):
+        filename = input('Enter Filename (To exit, enter q): ')
+        if os.path.isfile(filename):
+            if filename != "q":
+                concatwithSize = str(filename + ' EXISTS ' + str(os.path.getsize(filename)))
+                print (concatwithSize)
+                filenameAndSize = bytes(concatwithSize, 'utf-8')
+                s.send(filenameAndSize)
+                filepath = input('Enter the path where you want to upload the file: ')
+                filepathBytecode = bytes(filepath, 'utf-8')
+                s.send(filepathBytecode)
+                if os.path.exists(filepath):
+                    with open(filename, 'rb') as f:
+                        bytes_to_send = f.read()
+                        s.send(bytes_to_send)
+                    print(s.recv(1024).decode())
+                else:
+                    file_path = s.recv(1024).decode()
+                    print (file_path)
+            else:
+                print("User Exited ...")
+        else:
+            print("No file name given or file not exists")
 
     def admin_settings(self, s):
         #     TODO:admin settings
@@ -62,8 +87,7 @@ class FtsClient:
                 # get functionality
                 self.get(s)
             elif choice_rec == '2':
-                # TO DO: Add put functionality
-                pass
+                self.fts_put(s)
             elif choice_rec == '3':
                 self.client_settings(s)
             elif choice_rec == '4':
