@@ -2,10 +2,8 @@ import sys
 import socket
 import FileTransferService
 from msslogger import MSSLogger
-from Serverhandler import ServerHandler
+from Serverhandler import Serverhandler
 
-# MSSLogger.intializelogger()
-# logger = MSSLogger.getlogger("clientlogger")
 host = "127.0.0.1"
 port = 9999
 
@@ -17,7 +15,6 @@ class Client:
     def __init__(self):
         """Socket Creation"""
         try:
-            # logger.info("creating a socket connection")
             self.s = socket.socket()
             self.s.connect((host, port))
 
@@ -29,7 +26,7 @@ class Client:
         try:
             choice_msg = self.s.recv(1024)
             list = str(choice_msg.decode()).split(":")
-            self.logger = ServerHandler().myLogging("Client" + list[1]);
+            self.logger = Serverhandler().myLogging("Client" + list[1]);
             self.clientThreadCount = list[1]
             self.logger.info("======== WELCOME TO MULTI SERVICE SERVER  =========\n " + list[0])
             print("======== WELCOME TO MULTI SERVICE SERVER =========\n ", list[0])

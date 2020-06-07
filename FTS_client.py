@@ -3,7 +3,7 @@ import socket
 import sys
 
 from msslogger import MSSLogger
-from Serverhandler import ServerHandler
+from Serverhandler import Serverhandler
 
 
 class FtsClient:
@@ -113,7 +113,7 @@ class FtsClient:
         if choice_msg == '1':
             self.viewLogs(threadcount)
         elif choice_msg == '2':
-            self.get_user_details(s)
+            self.get_user_details(s, threadcount, self.logger)
             print(s.recv(1024).decode())
         else:
             print(s.recv(1024).decode())

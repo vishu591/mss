@@ -2,7 +2,7 @@ import os
 import sys
 import database
 from msslogger import MSSLogger
-from new_server import Server
+from Main_server import Server
 
 
 class FtsServer:
@@ -80,7 +80,7 @@ class FtsServer:
         else:
             conn.send(bytes('ERR', 'utf-8'))
 
-    def uploadFile(name, sock):
+    def uploadFile(self, sock):
         """this function is user for uploading the file from client to server"""
         filename = sock.recv(1024)
         encodedFilename = filename.decode()
@@ -109,7 +109,7 @@ class FtsServer:
 
 
     def fts_server(self, conn):
-        # self.db.create_user('user3', 'pass')
+        self.db.create_user('user3', 'pass1')
         result = self.user_authentication(conn)
         if result == 'Admin':
             self.admin_settings(conn)

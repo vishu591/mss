@@ -1,5 +1,5 @@
 import logging
-class serverFileHandler():
+class Serverhandler():
     def myLogging(self,fileName):
         logger = logging.getLogger("clientlogger")
         logger.setLevel(logging.INFO)
