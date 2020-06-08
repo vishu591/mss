@@ -13,6 +13,9 @@ class MSSLogger:
     # this method initialize the logger
     @staticmethod
     def intializelogger():
+        final_directory = str(Path(os.getcwd()).parent) + "\Logs"
+        if not os.path.exists(final_directory):
+            os.makedirs(final_directory)
         log_file_path = str(Path(os.getcwd()).parent)+ '\\log.ini'
         try:
             logging.config.fileConfig(fname=log_file_path, disable_existing_loggers=False)

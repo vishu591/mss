@@ -33,7 +33,11 @@ class FtsClient:
                 if message == 'Y':
                     s.send(bytes('OK', 'utf-8'))
                     filename1=filename[str(filename).rfind("/"):]
-                    f = open(str(Path(os.getcwd()).parent)+"\Downloads\\"+ filename1, 'wb')
+                    final_directory = str(Path(os.getcwd()).parent) + "\Downloads"
+                    print(final_directory)
+                    if not os.path.exists(final_directory):
+                        os.makedirs(final_directory)
+                    f = open(final_directory+"\\"+filename1, 'wb')
                     data = s.recv(1024)
                     total_recv = len(data)
                     f.write(data)
