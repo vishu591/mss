@@ -34,7 +34,6 @@ class FtsClient:
                     s.send(bytes('OK', 'utf-8'))
                     filename1=filename[str(filename).rfind("/"):]
                     final_directory = str(Path(os.getcwd()).parent) + "\Downloads"
-                    print(final_directory)
                     if not os.path.exists(final_directory):
                         os.makedirs(final_directory)
                     f = open(final_directory+"\\"+filename1, 'wb')
