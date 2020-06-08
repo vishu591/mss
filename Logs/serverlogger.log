@@ -1,0 +1,36 @@
+2020-06-08 02:51:53,923 - serverlogger - INFO - creating a socket connection
+2020-06-08 02:51:57,006 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 56366
+2020-06-08 02:51:57,006 - serverlogger - INFO - Thread Number:1
+2020-06-08 02:52:00,805 - serverlogger - INFO - ========= Value received from client1:2==========
+2020-06-08 02:52:10,978 - serverlogger - INFO - ========= Value received from client1:1==========
+2020-06-08 22:06:55,886 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:07:02,107 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51802
+2020-06-08 22:07:02,107 - serverlogger - INFO - Thread Number:1
+2020-06-08 22:10:41,614 - serverlogger - INFO - ========= Value received from client1:1==========
+2020-06-08 22:11:03,315 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51819
+2020-06-08 22:11:03,315 - serverlogger - INFO - Thread Number:2
+2020-06-08 22:11:05,670 - serverlogger - INFO - ========= Value received from client2:2==========
+2020-06-08 22:13:21,589 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:13:29,921 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:13:33,035 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51849
+2020-06-08 22:13:33,035 - serverlogger - INFO - Thread Number:1
+2020-06-08 22:13:37,199 - serverlogger - INFO - ========= Value received from client1:2==========
+2020-06-08 22:14:06,210 - serverlogger - INFO - Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-06-08 22:14:09,986 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:14:12,666 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51850
+2020-06-08 22:14:12,666 - serverlogger - INFO - Thread Number:1
+2020-06-08 22:14:15,157 - serverlogger - INFO - ========= Value received from client1: ==========
+2020-06-08 22:14:25,547 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51851
+2020-06-08 22:14:25,547 - serverlogger - INFO - Thread Number:2
+2020-06-08 22:14:28,831 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:14:54,984 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51852
+2020-06-08 22:14:54,984 - serverlogger - INFO - Thread Number:1
+2020-06-08 22:15:03,305 - serverlogger - INFO - ========= Value received from client1: ==========
+2020-06-08 22:15:54,010 - serverlogger - INFO - creating a socket connection
+2020-06-08 22:15:57,619 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51853
+2020-06-08 22:15:57,619 - serverlogger - INFO - Thread Number:1
+2020-06-08 22:16:01,551 - serverlogger - INFO - ========= Value received from client1:==========
+2020-06-08 22:16:14,688 - serverlogger - INFO - connection has been established with IP 127.0.0.1 and port 51854
+2020-06-08 22:16:14,688 - serverlogger - INFO - Thread Number:2
+2020-06-08 22:17:56,476 - serverlogger - INFO - Socket error: [WinError 10054] An existing connection was forcibly closed by the remote host
+2020-06-08 22:19:01,944 - serverlogger - INFO - creating a socket connection
