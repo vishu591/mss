@@ -1,4 +1,7 @@
 import os
+import socket
+import sys
+
 from DAO import database
 from Logging.MSSlogger import MSSLogger
 from Server.Main_server import Server
@@ -21,14 +24,48 @@ class FtsServer:
 
     def admin_settings(self, conn):
         # TODO: admin func (close server connection, view, delete, add)
-        pass
+        msg = "Admin Priviledges\n1. Close Server connection\n2. View all Users\n3. Add User\n4. Remove User"
+        conn.send(msg.encode())
+        inp_rec = conn.recv(1024).decode()
+        if inp_rec == '1':
+            conn.send("Closing the connection from server".encode())
+            conn.shutdown(socket.SHUT_RDWR)
+            conn.close()
+            sys.exit(1)
+        elif inp_rec == '2':
+            test_list = self.db.fetch_users_all()
+            temp = list(map(' '.join, test_list))
+            conn.send(str(temp).encode())
+        elif inp_rec == '3':
+            recv_username = self.send_and_rec_msg(conn, "Enter username: ")
+            recv_password = self.send_and_rec_msg(conn, "Enter password: ")
+            res = self.db.get_user_by_name(recv_username)
+            print(res)
+            if len(res) == 0:
+                print(self.db.create_user(recv_username.decode(), recv_password.decode()))
+                conn.send("User created successfully".encode())
+            else:
+                conn.send("User already exists".encode())
+            conn.send(str(self.db.fetch_users_all()).encode())
+        elif inp_rec == '4':
+            recv_username = self.send_and_rec_msg(conn, "Enter username: ")
+            recv_password = self.send_and_rec_msg(conn, "Enter password: ")
+            res = self.db.get_user_by_name(recv_username.decode())
+            if len(res) == 0:
+                conn.send("User does not exists".encode())
+            else:
+                self.db.remove_user(recv_username.decode(), recv_password.decode())
+                conn.send("User Deleted successfully".encode())
+            conn.send(str(self.db.fetch_users_all()).encode())
+        else:
+            conn.send("Invalid choice!!".encode())
 
     def user_authentication(self, conn):
         """User Authentication """
         # Receive username and password from Client
         recv_username = self.send_and_rec_msg(conn, "Enter username: ")
         recv_password = self.send_and_rec_msg(conn, "Enter password: ")
-        if recv_username == 'admin' and recv_password == 'admin':
+        if recv_username.decode() == 'admin' and recv_password.decode() == 'admin':
             conn.send("Admin Settings".encode())
             return "Admin"
         else:
@@ -110,7 +147,7 @@ class FtsServer:
 
 
     def fts_server(self, conn):
-        self.db.create_user('user3', 'pass1')
+        self.db.create_user('admin', 'admin')
         result = self.user_authentication(conn)
         if result == 'Admin':
             self.admin_settings(conn)

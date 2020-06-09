@@ -1,6 +1,4 @@
-import os
 import sqlite3
-from pathlib import Path
 
 
 class DatabaseConn:
@@ -8,7 +6,7 @@ class DatabaseConn:
     def __init__(self):
         self.conn = None
         try:
-            self.conn = sqlite3.connect(str(Path(os.getcwd()).parent)+"\\"+"auth.db")
+            self.conn = sqlite3.connect('auth.db')
         except sqlite3.Error as e:
             print(e)
 
@@ -19,8 +17,8 @@ class DatabaseConn:
             self.conn.commit()
         except sqlite3.Error as error:
             print("Error while creating table", error)
-        finally:
-            c.close()
+        # finally:
+        #     c.close()
 
     def create_user(self, username, password):
         try:
@@ -40,19 +38,18 @@ class DatabaseConn:
 
     def get_user_by_name(self, name):
         c = self.conn.cursor()
-        c.execute("SELECT * FROM Authentication WHERE user = ?", name)
+        c.execute("SELECT * FROM Authentication WHERE user = :user", {'user': name})
         return c.fetchall()
 
     def fetch_users_all(self):
         c = self.conn.cursor()
         c.execute("SELECT * FROM Authentication")
-        self.conn.commit()
         return c.fetchall()
 
-    def remove_all(self, conn):
-        c = conn.cursor()
-        c.execute("DELETE  FROM Authentication")
-        conn.commit()
+    def remove_user(self, name, pwd):
+        c = self.conn.cursor()
+        c.execute("DELETE  FROM Authentication WHERE user = ? AND pass = ?", (name, pwd))
+        self.conn.commit()
 
     def drop_table(self, conn):
         c = conn.cursor()

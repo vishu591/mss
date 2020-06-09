@@ -74,9 +74,33 @@ class FtsClient:
         else:
             print("No file name given or file not exists")
 
-    def admin_settings(self, s):
-        #     TODO:admin settings
-        pass
+    def admin_settings_client(self, s, threadcount, logger):
+        msg = s.recv(1024).decode()
+        print(msg)
+        ch_inp = input("")
+        s.send(ch_inp.encode())
+        if ch_inp == '1':
+            print(s.recv(1024).decode())
+            s.close()
+        elif ch_inp == '2':
+            print("List of users available:")
+            test_string = s.recv(1024).decode()
+            split_str = test_string.strip('[]').split(',')
+            for i in range(len(split_str)):
+                print(split_str[i])
+        elif ch_inp == '3':
+            self.get_user_details(s, threadcount, self.logger)
+            print(s.recv(1024).decode())
+            print("List of users available:")
+            list1 = s.recv(1024).decode()
+            print(list1)
+        elif ch_inp == '4':
+            self.get_user_details(s, threadcount, self.logger)
+            print(s.recv(1024).decode())
+            print("List of users available:")
+            print(s.recv(1024).decode())
+        else:
+            print(s.recv(1024).decode())
 
     def fts_client(self, s,threadcount, logger):
         self.logger=logger
@@ -85,7 +109,7 @@ class FtsClient:
         print(recv_msg)
         self.logger.info(recv_msg)
         if recv_msg == 'Admin Settings':
-            self.admin_settings(s)
+            self.admin_settings_client(s, threadcount, logger)
         elif recv_msg == 'User Authenticated':
             print(s.recv(1024).decode(), end="")
             msg2 = input("")
@@ -97,7 +121,7 @@ class FtsClient:
             elif choice_rec == '2':
                 self.fts_put(s)
             elif choice_rec == '3':
-                self.client_settings(s,threadcount)
+                self.client_settings(s, threadcount)
             elif choice_rec == '4':
                 print(s.recv(1024).decode())
                 sys.exit(1)
