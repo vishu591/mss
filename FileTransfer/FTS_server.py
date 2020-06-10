@@ -23,15 +23,13 @@ class FtsServer:
         return credentials[1].encode()
 
     def admin_settings(self, conn):
-        # TODO: admin func (close server connection, view, delete, add)
-        msg = "Admin Priviledges\n1. Close Server connection\n2. View all Users\n3. Add User\n4. Remove User"
+        """admin func (close connection, view, delete, add"""
+        msg = "1. Close connection\n2. View all Users\n3. Add User\n4. Remove User\nChoose from above option: "
         conn.send(msg.encode())
         inp_rec = conn.recv(1024).decode()
         if inp_rec == '1':
-            conn.send("Closing the connection from server".encode())
-            conn.shutdown(socket.SHUT_RDWR)
-            conn.close()
-            sys.exit(1)
+            conn.send("Closing the connection by Admin".encode())
+
         elif inp_rec == '2':
             test_list = self.db.fetch_users_all()
             temp = list(map(' '.join, test_list))
@@ -46,17 +44,15 @@ class FtsServer:
                 conn.send("User created successfully".encode())
             else:
                 conn.send("User already exists".encode())
-            conn.send(str(self.db.fetch_users_all()).encode())
         elif inp_rec == '4':
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
-            recv_password = self.send_and_rec_msg(conn, "Enter password: ")
+            #recv_password = self.send_and_rec_msg(conn, "Enter password: ")
             res = self.db.get_user_by_name(recv_username.decode())
             if len(res) == 0:
                 conn.send("User does not exists".encode())
             else:
-                self.db.remove_user(recv_username.decode(), recv_password.decode())
+                self.db.remove_user(recv_username.decode())
                 conn.send("User Deleted successfully".encode())
-            conn.send(str(self.db.fetch_users_all()).encode())
         else:
             conn.send("Invalid choice!!".encode())
 
@@ -119,29 +115,41 @@ class FtsServer:
 
     def uploadFile(self, sock):
         """this function is user for uploading the file from client to server"""
-        filename = sock.recv(1024)
-        encodedFilename = filename.decode()
-        filesize = int(encodedFilename.split(" EXISTS ", 1)[1])
-        finalfileName = encodedFilename.split(" EXISTS ", 1)[0]
-        print("file which is going to be uploaded is : " + finalfileName)
-        filepath = sock.recv(1024)
-        encodedFilePath = filepath.decode()
-        if os.path.exists(encodedFilePath):
-            os.chdir(encodedFilePath)
-            print(finalfileName, " file will be available on path:", encodedFilePath)
-            filename1 = finalfileName[str(finalfileName).rfind("/"):]
-            f = open(encodedFilePath+"/"+ filename1, 'wb')
-            data = sock.recv(1024)
-            total_recv = len(data)
-            f.write(data)
-            while total_recv < filesize:
-                data = sock.recv(1024)
-                total_recv += len(data)
-                f.write(data)
-            print("Upload complete")
-            sock.send("Upload complete".encode())
+        filename = sock.recv(1024)#filename
+        encodedFile = filename.decode()
+        if os.path.isfile(encodedFile) and filename != "q":
+            encodedFilename = sock.recv(1024).decode()#concatinate size
+            filesize = int(encodedFilename.split(" EXISTS ", 1)[1])
+            finalfileName = encodedFilename.split(" EXISTS ", 1)[0]
+            print("file which is going to be uploaded is : " + finalfileName)
+            upload_filepath = sock.recv(1024)
+            if upload_filepath.decode() == "":
+                sock.send("No file path given".encode())
+                print("No file path given")
+            else:
+                encodedFilePath = upload_filepath.decode()
+                print(os.path.exists(encodedFilePath))
+                if os.path.exists(encodedFilePath):
+                    os.chdir(encodedFilePath)
+                    print(finalfileName, " file will be available on path:", encodedFilePath)
+                    filename1 = finalfileName[str(finalfileName).rfind("/"):]
+                    f = open(encodedFilePath+"/"+ filename1, 'wb')
+                    data = sock.recv(1024)
+                    total_recv = len(data)
+                    f.write(data)
+                    while total_recv < filesize:
+                        data = sock.recv(1024)
+                        total_recv += len(data)
+                        f.write(data)
+                    print("Upload complete")
+                    sock.send("Upload complete".encode())
+                else:
+                    no_path = (f"file path '{encodedFilePath}' doesn't exist, Please try again")
+                    print(no_path)
+                    sock.send(no_path.encode())
+
         else:
-            no_path = (f"file path '{encodedFilePath}' doesn't exist, Please try again")
+            no_path = ("No filename given or user wants to quit")
             print(no_path)
             sock.send(no_path.encode())
 

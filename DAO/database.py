@@ -17,8 +17,6 @@ class DatabaseConn:
             self.conn.commit()
         except sqlite3.Error as error:
             print("Error while creating table", error)
-        # finally:
-        #     c.close()
 
     def create_user(self, username, password):
         try:
@@ -43,12 +41,12 @@ class DatabaseConn:
 
     def fetch_users_all(self):
         c = self.conn.cursor()
-        c.execute("SELECT * FROM Authentication")
+        c.execute("SELECT user FROM Authentication")
         return c.fetchall()
 
-    def remove_user(self, name, pwd):
+    def remove_user(self, name):
         c = self.conn.cursor()
-        c.execute("DELETE  FROM Authentication WHERE user = ? AND pass = ?", (name, pwd))
+        c.execute("DELETE  FROM Authentication WHERE user = :user ", {'user': name} )
         self.conn.commit()
 
     def drop_table(self, conn):

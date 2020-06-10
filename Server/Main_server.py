@@ -53,7 +53,7 @@ class Server:
                 self.logger.info('Thread Number:' + str(self.threadCount))
                 start_new_thread(self.send_choice, (conn,))
         except KeyboardInterrupt:
-            print("Closing the socket as interupted by user")
+            print("Closing the socket as interrupted by user")
             sys.exit(1)
 
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
@@ -84,7 +84,7 @@ class Server:
             msg_recv = conn.recv(1024)
             self.logger.info("========= Value received from client" + msg_recv.decode() + "==========")
             print("========= Value received from client", msg_recv.decode(), "==========")
-            list=str(msg_recv.decode()).split(":")
+            list = str(msg_recv.decode()).split(":")
             conn.send(list[1].encode())
             self.select_choice(conn, list[1].encode())
         except socket.error as msg:

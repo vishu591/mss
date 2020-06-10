@@ -5,25 +5,24 @@ from pathlib import Path
 
 
 class FtsClient:
-    logger=""
+    logger = ""
+
     @staticmethod
     def get_user_details(s, threadcount, logger):
         # receive username entry
-        logger =logger
+        logger = logger
         print(s.recv(1024).decode(), end="")
         username = input("")
-        s.send((str(threadcount)+":"+username).encode())
+        s.send((str(threadcount) + ":" + username).encode())
 
         # receive password entry
         print(s.recv(1024).decode(), end="")
         password = input("")
-        s.send((str(threadcount)+":"+password).encode('utf-8'))
+        s.send((str(threadcount) + ":" + password).encode('utf-8'))
 
     def get(self, s):
-        filename = input('Enter FilePath(To exit, enter q): ')
-
+        filename = input('Enter Filepath(To exit, enter q): ')
         if filename != "q" and len(filename) > 0:
-            print(filename)
             s.send(filename.encode('utf-8'))
             data1 = s.recv(1024)
             data = data1.decode()
@@ -32,11 +31,11 @@ class FtsClient:
                 message = input("File Exists, " + str(filesize) + "Bytes, download? Y/N> ->")
                 if message == 'Y':
                     s.send(bytes('OK', 'utf-8'))
-                    filename1=filename[str(filename).rfind("/"):]
+                    filename1 = filename[str(filename).rfind("/"):]
                     final_directory = str(Path(os.getcwd()).parent) + "\Downloads"
                     if not os.path.exists(final_directory):
                         os.makedirs(final_directory)
-                    f = open(final_directory+"\\"+filename1, 'wb')
+                    f = open(str(Path(os.getcwd()).parent) + "\Downloads\\" + filename1, 'wb')
                     data = s.recv(1024)
                     total_recv = len(data)
                     f.write(data)
@@ -44,7 +43,9 @@ class FtsClient:
                         data = s.recv(1024)
                         total_recv += len(data)
                         f.write(data)
-                print("Download complete")
+                    print("Download complete")
+                else:
+                    print("Download aborted")
             else:
                 print("File does not exists!")
         else:
@@ -52,31 +53,38 @@ class FtsClient:
 
     def fts_put(self, s):
         filename = input('Enter FilePath (To exit, enter q): ')
-        if os.path.isfile(filename):
-            if filename != "q":
+        if len(filename) > 0 and filename != "q":
+            s.send(filename.encode())
+            if os.path.isfile(filename):
                 concatwithSize = str(filename + ' EXISTS ' + str(os.path.getsize(filename)))
-                print (concatwithSize)
+                print(concatwithSize)
                 filenameAndSize = bytes(concatwithSize, 'utf-8')
                 s.send(filenameAndSize)
                 filepath = input('Enter the path where you want to upload the file: ')
-                filepathBytecode = bytes(filepath, 'utf-8')
-                s.send(filepathBytecode)
-                if os.path.exists(filepath):
-                    with open(filename, 'rb') as f:
-                        bytes_to_send = f.read()
-                        s.send(bytes_to_send)
-                    print(s.recv(1024).decode())
+                if len(filepath) > 0:
+                    filepathBytecode = bytes(filepath, 'utf-8')
+                    s.sendall(filepathBytecode)
+                    if not (os.path.exists(filepath)):
+                        file_path = s.recv(1024).decode()
+                        print(file_path)
+                    else:
+                        with open(filename, 'rb') as f:
+                            bytes_to_send = f.read()
+                            s.send(bytes_to_send)
+                        print(s.recv(1024).decode())
                 else:
-                    file_path = s.recv(1024).decode()
-                    print (file_path)
+                    print("no file path entered")
+
             else:
-                print("User Exited ...")
+                file_path = s.recv(1024).decode()
+                print(file_path)
         else:
-            print("No file name given or file not exists")
+            print("No filename given or user wants to quit")
+            sys.exit(1)
 
     def admin_settings_client(self, s, threadcount, logger):
         msg = s.recv(1024).decode()
-        print(msg)
+        print(msg, end="")
         ch_inp = input("")
         s.send(ch_inp.encode())
         if ch_inp == '1':
@@ -91,20 +99,17 @@ class FtsClient:
         elif ch_inp == '3':
             self.get_user_details(s, threadcount, self.logger)
             print(s.recv(1024).decode())
-            print("List of users available:")
-            list1 = s.recv(1024).decode()
-            print(list1)
         elif ch_inp == '4':
-            self.get_user_details(s, threadcount, self.logger)
-            print(s.recv(1024).decode())
-            print("List of users available:")
+            print(s.recv(1024).decode(), end="")
+            username = input("")
+            s.send((str(threadcount) + ":" + username).encode())
             print(s.recv(1024).decode())
         else:
             print(s.recv(1024).decode())
 
-    def fts_client(self, s,threadcount, logger):
-        self.logger=logger
-        self.get_user_details(s,threadcount,logger)
+    def fts_client(self, s, threadcount, logger):
+        self.logger = logger
+        self.get_user_details(s, threadcount, logger)
         recv_msg = s.recv(1024).decode()
         print(recv_msg)
         self.logger.info(recv_msg)
@@ -113,10 +118,9 @@ class FtsClient:
         elif recv_msg == 'User Authenticated':
             print(s.recv(1024).decode(), end="")
             msg2 = input("")
-            s.send((str(threadcount)+":"+msg2).encode())
+            s.send((str(threadcount) + ":" + msg2).encode())
             choice_rec = s.recv(1024).decode()
             if choice_rec == '1':
-                # get functionality
                 self.get(s)
             elif choice_rec == '2':
                 self.fts_put(s)
@@ -131,10 +135,10 @@ class FtsClient:
         else:
             sys.exit(1)
 
-    def client_settings(self, s,threadcount):
+    def client_settings(self, s, threadcount):
         print(s.recv(1024).decode(), end="")
         choice_msg = input("")
-        s.send((str(threadcount)+":"+choice_msg).encode())
+        s.send((str(threadcount) + ":" + choice_msg).encode())
         if choice_msg == '1':
             self.viewLogs(threadcount)
         elif choice_msg == '2':
@@ -144,10 +148,9 @@ class FtsClient:
             print(s.recv(1024).decode())
             sys.exit(1)
 
-    # This method is used to view client logs
-    def viewLogs(self,threadcount):
-        logsFolderPath=str(Path(os.getcwd()).parent)+"\Logs\\"
-        file =open(logsFolderPath+"Client"+str(threadcount)+".log", "r")
-        allContent=file.read()
+    def viewLogs(self, threadcount):
+        logsFolderPath = str(Path(os.getcwd()).parent) + "\Logs\\"
+        file = open(logsFolderPath + "Client" + str(threadcount) + ".log", "r")
+        allContent = file.read()
         print(allContent)
         file.close()
