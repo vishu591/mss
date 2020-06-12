@@ -59,7 +59,6 @@ class Server:
         except socket.error as msg:  # IN case connection timed out and socket creation is failed.
             print("Socket Creation error: " + str(msg))
             sys.exit(1)
-        conn.close()
 
     def recv_data(self, conn, msg):
         """Receiving data for choices"""
@@ -79,7 +78,7 @@ class Server:
     def send_choice(self, conn):
         """Receiving data for choices"""
         try:
-            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer:"+str(self.threadCount)
+            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer :"+str(self.threadCount)
             conn.send(choice_msg.encode())
             msg_recv = conn.recv(1024)
             self.logger.info("========= Value received from client" + msg_recv.decode() + "==========")
@@ -115,7 +114,7 @@ class Server:
                 print("Input received from client", decoded_data)
                 list=str(decoded_data).split(":")
                 received_data=list[1]
-                if str(received_data).upper() == "QUIT" or str(received_data).upper() == "EXIT" :
+                if str(received_data).upper() == "QUIT" or str(received_data).upper() == "EXIT":
                     conn.send("Disconnecting from server ...\a".encode())
                     break
                 conn.sendall(received_data.encode())

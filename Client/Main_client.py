@@ -26,7 +26,7 @@ class Client:
         try:
             choice_msg = self.s.recv(1024)
             list = str(choice_msg.decode()).split(":")
-            self.logger = MSSLogger.getClientLogger("Client" + list[1]);
+            self.logger = MSSLogger.getClientLogger("Client" + list[1])
             self.clientThreadCount = list[1]
             self.logger.info("======== WELCOME TO MULTI SERVICE SERVER  =========\n " + list[0])
             print("======== WELCOME TO MULTI SERVICE SERVER =========\n ", list[0])
@@ -83,11 +83,15 @@ class Client:
 
             # echo reply from server
             data = self.s.recv(1024)
+            # if msg is for quit connection will close using break statement
+            if data.decode() == "Disconnecting from server ...\a":
+                print(data.decode())
+                break
+
             print("Received echo message from server: ", data.decode())
             self.logger.info("Received echo message from server: " + data.decode())
 
-            if data.decode() == "Disconnecting from server ...\a":
-                break
+
         self.s.close()
 
     def file_transfer(self):
