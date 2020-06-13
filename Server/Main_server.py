@@ -6,7 +6,7 @@ from FileTransfer import FileTransferService
 from Logging.MSSlogger import MSSLogger
 
 host = ""  # Address of the socket
-port = 9999  # Port of the socket
+port = 9997  # Port of the socket
 
 MSSLogger.intializelogger()
 

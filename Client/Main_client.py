@@ -10,7 +10,7 @@ from Logging.MSSlogger import MSSLogger
 
 
 host = "127.0.0.1"
-port = 9999
+port = 9997
 
 
 class Client:
@@ -84,8 +84,9 @@ class Client:
                     print("\033[1;31;40m")  # red color
                     print(self.s.recv(1024).decode().center(os.get_terminal_size().columns))
                     print("\033[0;37;40m")  # normal text
-                    self.logger.error(self.s.recv(1024).decode())
+                    # self.logger.error(self.s.recv(1024).decode())
                     sys.exit(1)
+
             else:
                 print("\033[1;31;40m")  # red color
                 print("Warning: Ack not received from server ")
