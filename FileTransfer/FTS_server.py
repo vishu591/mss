@@ -18,7 +18,7 @@ class FtsServer:
     def send_and_rec_msg(self, conn, msg):
         conn.send(msg.encode())
         recv_frm_client = conn.recv(1024)
-        credentials=str(recv_frm_client.decode()).split(":")
+        credentials = str(recv_frm_client.decode()).split(":")
         print("Value received from client", recv_frm_client.decode())
         return credentials[1].encode()
 
@@ -38,15 +38,13 @@ class FtsServer:
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
             recv_password = self.send_and_rec_msg(conn, "Enter password: ")
             res = self.db.get_user_by_name(recv_username)
-            print(res)
-            if len(res) == 0:
+            if res is None:
                 print(self.db.create_user(recv_username.decode(), recv_password.decode()))
                 conn.send("User created successfully".encode())
             else:
                 conn.send("User already exists".encode())
         elif inp_rec == '4':
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
-            #recv_password = self.send_and_rec_msg(conn, "Enter password: ")
             res = self.db.get_user_by_name(recv_username.decode())
             if len(res) == 0:
                 conn.send("User does not exists".encode())
@@ -81,7 +79,6 @@ class FtsServer:
         if recv_ch_msg.decode() == '1':
             pass
         elif recv_ch_msg.decode() == '2':
-            pass
             # Receive username and password from Client
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
             recv_password = self.send_and_rec_msg(conn, "Enter password: ")
@@ -160,7 +157,7 @@ class FtsServer:
         if result == 'Admin':
             self.admin_settings(conn)
         elif result:
-            choice_msg2 = "========= You have choosed FTS service !!!=========\n1. get (To download the file from the server)\n2. put (If you want to upload the file into the server).\n3. Enter into the setting mode\n4. Quit\nPlease choose from above option: "
+            choice_msg2 = "1. get (To download the file from the server)\n2. put (If you want to upload the file into the server).\n3. Enter into the setting mode\n4. Quit\nPlease choose from above option: "
             recv_msg = Server.recv_data(self, conn, choice_msg2)
             if recv_msg.decode() == '1':
                 # Get functionality

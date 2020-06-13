@@ -78,7 +78,7 @@ class Server:
     def send_choice(self, conn):
         """Receiving data for choices"""
         try:
-            choice_msg = "With which operation you would like to proceed with\n1.Echo\n2.File Transfer :"+str(self.threadCount)
+            choice_msg = "Choose from below services\n1.Echo\n2.File Transfer:"+str(self.threadCount)
             conn.send(choice_msg.encode())
             msg_recv = conn.recv(1024)
             self.logger.info("========= Value received from client" + msg_recv.decode() + "==========")
@@ -90,11 +90,10 @@ class Server:
             self.logger.info("Socket error: " + str(msg))
             sys.exit(1)
 
-
     def select_choice(self, conn, choice):
         """Choice selected """
         if choice.decode() == "1":
-            echo_str = "========= You have choosed ECHO service !!!=========\n=========If you want to exit from ECHO service then please Enter (Quit/Exit) ========="
+            echo_str = "To exit, please Enter (Quit/Exit)"
             conn.send(echo_str.encode())
             self.server_echo(conn)
         
@@ -102,7 +101,8 @@ class Server:
             self.server_fts(conn)
 
         else:	
-            conn.send("Wrong choice entered!!!\nExiting...".encode())
+            conn.send("Wrong choice entered!!!".encode())
+
 
     def server_echo(self, conn):
         """Echo Server """
