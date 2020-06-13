@@ -1,4 +1,6 @@
+import os
 import sqlite3
+from pathlib import Path
 
 
 class DatabaseConn:
@@ -6,7 +8,7 @@ class DatabaseConn:
     def __init__(self):
         self.conn = None
         try:
-            self.conn = sqlite3.connect('auth.db')
+            self.conn = sqlite3.connect(str(Path(os.getcwd()).parent)+"\\"+"auth.db")
         except sqlite3.Error as e:
             print(e)
 
