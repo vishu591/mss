@@ -1,9 +1,9 @@
 import os
 import sys
 import time
-from fileinput import filename
-from pathlib import Path
 import getpass
+from pathlib import Path
+
 
 class FtsClient:
     logger = ""
@@ -116,6 +116,7 @@ class FtsClient:
             split_str = test_string.strip('[]').split(',')
             for i in range(len(split_str)):
                 print(split_str[i])
+            sys.exit(1)
         elif ch_inp == '3':
             print("\033[1;32;40m")  # green color
             print("Create new user".center(os.get_terminal_size().columns))
@@ -135,8 +136,11 @@ class FtsClient:
             print(s.recv(1024).decode())
             print("\033[0;37;40m")  # normal text
 
-    def fts_client(self, s, threadcount, logger):
+    def fts_client(self, s, threadcount, logger, pass_try_count):
         self.logger = logger
+        if pass_try_count == 0:
+            print("You Have Exceeded the Password Limit.Please Try After SomeTime!!!")
+            sys.exit(0)
         self.get_user_details(s, threadcount, logger)
         recv_msg = s.recv(1024).decode()
         print("\033[1;32;40m")  # green color
@@ -187,7 +191,8 @@ class FtsClient:
                 print("\033[0;37;40m")  # normal text
                 sys.exit(1)
         else:
-            sys.exit(1)
+            while pass_try_count <= 3:
+                self.fts_client(s, threadcount, logger, pass_try_count - 1)
 
     def client_settings(self, s, threadcount):
         print(s.recv(1024).decode(), end="")
@@ -198,6 +203,7 @@ class FtsClient:
             print("View Logging\n".center(os.get_terminal_size().columns))
             print("\033[0;37;40m")  # normal text
             self.viewLogs(threadcount)
+            sys.exit(1)
         elif choice_msg == '2':
             print("\033[1;32;40m")  # green color
             print("Add new User:\n".center(os.get_terminal_size().columns))

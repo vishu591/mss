@@ -16,6 +16,7 @@ port = 9997
 class Client:
     logger = ""
     clientThreadCount = 0
+    max_pwd_try_count=3
 
     def __init__(self):
         """Socket Creation"""
@@ -126,4 +127,4 @@ class Client:
     def file_transfer(self):
         """client code for fts get functionality"""
         fts_obj = FileTransferService.FileTransfer()
-        fts_obj.fts_client(self.s, self.clientThreadCount, self.logger)
+        fts_obj.fts_client(self.s, self.clientThreadCount, self.logger,self.max_pwd_try_count)

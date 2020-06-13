@@ -9,6 +9,8 @@ from Server.Main_server import Server
 
 class FtsServer:
     logger = MSSLogger.getlogger("serverlogger")
+    max_pwd_try_count = 3
+
     def __init__(self):
         # Create connection
         self.db = database.DatabaseConn()
@@ -54,22 +56,28 @@ class FtsServer:
         else:
             conn.send("Invalid choice!!".encode())
 
-    def user_authentication(self, conn):
+    def user_authentication(self, conn, pass_try_count):
         """User Authentication """
         # Receive username and password from Client
-        recv_username = self.send_and_rec_msg(conn, "Enter username: ")
-        recv_password = self.send_and_rec_msg(conn, "Enter password: ")
-        if recv_username.decode() == 'admin' and recv_password.decode() == 'admin':
-            conn.send("Admin Settings".encode())
-            return "Admin"
+        if pass_try_count== 0:
+            return False
         else:
-            result = self.db.get_user_by_name_and_pass(recv_username.decode(), recv_password.decode())
-            if result:
-                conn.send("User Authenticated".encode())
-                return True
+            recv_username = self.send_and_rec_msg(conn, "Enter username: ")
+            recv_password = self.send_and_rec_msg(conn, "Enter password: ")
+            if recv_username.decode() == 'admin' and recv_password.decode() == 'admin':
+                conn.send("Admin Settings".encode())
+                return "Admin"
             else:
-                conn.send("Invalid Username or Password".encode())
-                return False
+                result = self.db.get_user_by_name_and_pass(recv_username.decode(), recv_password.decode())
+                if result:
+                    conn.send("User Authenticated".encode())
+                    return True
+                else:
+                    while pass_try_count > 0:
+                        if pass_try_count >1:
+                            conn.send("Invalid Username or Password.Please Try Again".encode())
+                        return self.user_authentication(conn, pass_try_count - 1)
+
 
     def server_settings(self, conn):
         """For settings choice"""
@@ -112,10 +120,10 @@ class FtsServer:
 
     def uploadFile(self, sock):
         """this function is user for uploading the file from client to server"""
-        filename = sock.recv(1024)#filename
+        filename = sock.recv(1024)  # filename
         encodedFile = filename.decode()
         if os.path.isfile(encodedFile) and filename != "q":
-            encodedFilename = sock.recv(1024).decode()#concatinate size
+            encodedFilename = sock.recv(1024).decode()  # concatinate size
             filesize = int(encodedFilename.split(" EXISTS ", 1)[1])
             finalfileName = encodedFilename.split(" EXISTS ", 1)[0]
             print("file which is going to be uploaded is : " + finalfileName)
@@ -130,7 +138,7 @@ class FtsServer:
                     os.chdir(encodedFilePath)
                     print(finalfileName, " file will be available on path:", encodedFilePath)
                     filename1 = finalfileName[str(finalfileName).rfind("/"):]
-                    f = open(encodedFilePath+"/"+ filename1, 'wb')
+                    f = open(encodedFilePath + "/" + filename1, 'wb')
                     data = sock.recv(1024)
                     total_recv = len(data)
                     f.write(data)
@@ -150,10 +158,9 @@ class FtsServer:
             print(no_path)
             sock.send(no_path.encode())
 
-
     def fts_server(self, conn):
         self.db.create_user('admin', 'admin')
-        result = self.user_authentication(conn)
+        result = self.user_authentication(conn, self.max_pwd_try_count)
         if result == 'Admin':
             self.admin_settings(conn)
         elif result:
