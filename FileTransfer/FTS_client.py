@@ -15,10 +15,8 @@ class FtsClient:
         print(s.recv(1024).decode(), end="")
         username = input("")
         s.send((str(threadcount) + ":" + username).encode())
-
         # receive password entry
         print(s.recv(1024).decode(), end="")
-
         password = getpass.getpass(prompt="")
         s.send((str(threadcount) + ":" + password).encode('utf-8'))
 
@@ -191,8 +189,8 @@ class FtsClient:
                 print("\033[0;37;40m")  # normal text
                 sys.exit(1)
         else:
-            while pass_try_count <= 3:
-                self.fts_client(s, threadcount, logger, pass_try_count - 1)
+            while pass_try_count > 0:
+                return self.fts_client(s, threadcount, logger, pass_try_count - 1)
 
     def client_settings(self, s, threadcount):
         print(s.recv(1024).decode(), end="")

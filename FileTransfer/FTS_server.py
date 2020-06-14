@@ -31,7 +31,6 @@ class FtsServer:
         inp_rec = conn.recv(1024).decode()
         if inp_rec == '1':
             conn.send("Closing the connection by Admin".encode())
-
         elif inp_rec == '2':
             test_list = self.db.fetch_users_all()
             temp = list(map(' '.join, test_list))
@@ -179,3 +178,4 @@ class FtsServer:
                 conn.send("Wrong choice entered!!".encode())
         else:
             print("Invalid username or password!!")
+            conn.send("  ".encode())
