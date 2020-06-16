@@ -38,8 +38,8 @@ class FtsServer:
         elif inp_rec == '3':
             recv_username = self.send_and_rec_msg(conn, "Enter username: ")
             recv_password = self.send_and_rec_msg(conn, "Enter password: ")
-            res = self.db.get_user_by_name(recv_username)
-            if res is None:
+            res = self.db.get_user_by_name(recv_username.decode())
+            if len(res) == 0:
                 print(self.db.create_user(recv_username.decode(), recv_password.decode()))
                 conn.send("User created successfully".encode())
             else:
