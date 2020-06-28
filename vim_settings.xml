@@ -1,0 +1,108 @@
+<application>
+  <component name="VimEditorSettings">
+    <editor />
+  </component>
+  <component name="VimHistorySettings">
+    <history>
+      <history-cmd />
+    </history>
+  </component>
+  <component name="VimKeySettings">
+    <shortcut-conflicts>
+      <shortcut-conflict owner="vim">
+        <text>ctrl pressed C</text>
+      </shortcut-conflict>
+      <shortcut-conflict owner="ide">
+        <text>ctrl pressed V</text>
+      </shortcut-conflict>
+      <shortcut-conflict owner="vim">
+        <text>ctrl pressed F</text>
+      </shortcut-conflict>
+      <shortcut-conflict owner="vim">
+        <text>ctrl pressed S</text>
+      </shortcut-conflict>
+    </shortcut-conflicts>
+  </component>
+  <component name="VimMarksSettings">
+    <globalmarks />
+    <filemarks>
+      <file name="/Dummy.txt" timestamp="1591470896093">
+        <mark key="[" line="0" column="0" />
+      </file>
+      <file name="E:/python/Certification/POC/mss/FTS_client.py" timestamp="1591474342770">
+        <mark key="'" line="66" column="39" />
+        <mark key="[" line="59" column="25" />
+        <mark key="]" line="59" column="25" />
+        <mark key="." line="59" column="25" />
+        <mark key="^" line="52" column="33" />
+      </file>
+      <file name="E:/python/Certification/POC/mss/FTS_server.py" timestamp="1591474497878">
+        <mark key="q" line="6" column="4" />
+        <mark key="e" line="6" column="4" />
+        <mark key="v" line="78" column="20" />
+        <mark key="f" line="3" column="0" />
+        <mark key="[" line="92" column="20" />
+        <mark key="]" line="92" column="20" />
+        <mark key="^" line="92" column="21" />
+        <mark key="." line="92" column="20" />
+      </file>
+    </filemarks>
+    <jumps>
+      <jump line="90" column="23" filename="E:/python/Certification/POC/mss/FTS_client.py" />
+      <jump line="64" column="39" filename="E:/python/Certification/POC/mss/FTS_client.py" />
+    </jumps>
+  </component>
+  <component name="VimRegisterSettings">
+    <registers>
+      <register name="1" type="2">
+        <text encoding="base64">ICAgICAgICBlbHNlOgogICAgICAgICAgICBwcmludCgiSW52YWxpZCB1c2VybmFtZSBvciBwYXNzd29yZCEhIikK</text>
+      </register>
+      <register name="&quot;" type="4">
+        <text>p</text>
+      </register>
+      <register name="2" type="2">
+        <text encoding="base64">ICAgICAgICAgICAgCg==</text>
+      </register>
+      <register name="3" type="2">
+        <text encoding="base64">ICAgICAgICAgICAgCg==</text>
+      </register>
+      <register name="4" type="2">
+        <text encoding="base64">ICAgICAgICAgICAgCg==</text>
+      </register>
+      <register name="e" type="4">
+        <text>rkjfm</text>
+      </register>
+      <register name="5" type="2">
+        <text encoding="base64">ICAgICAgICAgICAgCg==</text>
+      </register>
+      <register name="6" type="2">
+        <text encoding="base64">Cg==</text>
+      </register>
+      <register name="7" type="4">
+        <text encoding="base64">Cg==</text>
+      </register>
+      <register name="8" type="4">
+        <text encoding="base64">PSBpbnB1dCgiIikKICAgICAgICBzLnNlbmQocGFzc3dvcmQuZW5jb2RlKCd1dGYtOCcpKQo=</text>
+      </register>
+      <register name="9" type="2">
+        <text encoding="base64">CiAgICBkZWYgZnRzX3NlcnZlcihzZWxmLCBjb25uKToK</text>
+      </register>
+      <register name="-" type="4">
+        <text>p</text>
+      </register>
+    </registers>
+  </component>
+  <component name="VimSearchSettings">
+    <search>
+      <last-dir>0</last-dir>
+      <show-last>false</show-last>
+    </search>
+  </component>
+  <component name="VimSettings">
+    <state version="6" enabled="false" />
+    <notifications>
+      <idea-join enabled="false" />
+      <idea-put enabled="false" />
+    </notifications>
+  </component>
+</application>
